@@ -47,6 +47,7 @@ Item {
 
         ColumnLayout {
             Layout.fillWidth: true
+            Layout.fillHeight: true
             Layout.leftMargin: Theme.spacingM
             Layout.rightMargin: Theme.spacingM
             spacing: Theme.spacingM

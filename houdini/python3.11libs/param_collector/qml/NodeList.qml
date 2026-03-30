@@ -6,18 +6,32 @@ import Theme 1.0
 
 Rectangle {
     property alias model: listViewNode.model
+    property bool contentDrivenHeight: false
 
     Layout.fillWidth: true
-    Layout.fillHeight: true
+    Layout.fillHeight: !contentDrivenHeight
 
-    implicitHeight: layoutRoot.implicitHeight
+    implicitHeight: {
+        if (!contentDrivenHeight) {
+            return 0
+        }
+
+        const margins = Theme.spacingM * 2
+        const headerHeight = Theme.controlHeight
+        const listTopMargin = listViewNode.count > 0 ? Theme.spacingM : 0
+        const listHeight = listViewNode.count > 0 ? listViewNode.contentHeight : 0
+
+        return margins + headerHeight + listTopMargin + listHeight
+    }
+
     border.width: Theme.listViewBorderWidth
     border.color: Theme.listViewBorderColor
 
     ColumnLayout {
         id: layoutRoot
         anchors.fill: parent
-        spacing: Theme.spacingM
+        anchors.margins: Theme.spacingM
+        spacing: 0
 
         RowLayout {
             Layout.fillWidth: true
@@ -35,7 +49,6 @@ Rectangle {
                 Layout.preferredWidth: Theme.controlHeight
                 Layout.preferredHeight: Theme.controlHeight
                 font.pixelSize: Theme.fontSizeM
-                padding: Theme.spacingXs
 
                 onClicked: {
                     if (listViewNode.model) {
@@ -52,29 +65,31 @@ Rectangle {
         ListView {
             id: listViewNode
 
+            visible: !contentDrivenHeight || count > 0
+
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.preferredHeight: implicitHeight
+            Layout.fillHeight: !contentDrivenHeight
+            Layout.topMargin: count > 0 ? Theme.spacingM : 0
 
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             spacing: Theme.spacingM
+            interactive: !contentDrivenHeight
 
-            implicitHeight: contentHeight
+            implicitHeight: contentDrivenHeight && count > 0 ? contentHeight : 0
 
             ScrollBar.vertical: ScrollBar {
                 id: scrollBarNode
-                policy: ScrollBar.AsNeeded
+                policy: contentDrivenHeight ? ScrollBar.AlwaysOff : ScrollBar.AsNeeded
             }
 
             delegate: Rectangle {
-                id: nodeItem
-
                 required property int index
                 required property int textKind
                 required property string text
                 required property var paramTupleListModel
 
+                id: nodeItem
                 width: listViewNode.width - (scrollBarNode.visible ? scrollBarNode.width : 0) - Theme.spacingS
                 implicitHeight: nodeItemLayout.implicitHeight
                 height: implicitHeight
@@ -109,13 +124,11 @@ Rectangle {
 
                             ComboBox {
                                 id: comboBoxNodeTextKind
-
                                 Layout.preferredWidth: Theme.rowHeaderWidth
                                 Layout.preferredHeight: Theme.controlHeight
                                 font.pixelSize: Theme.fontSizeM
                                 padding: Theme.spacingXs
-
-                                model: listViewNode.model.textKindItems
+                                model: listViewNode.model ? listViewNode.model.textKindItems : []
                                 textRole: "text"
                                 valueRole: "value"
 
@@ -126,10 +139,7 @@ Rectangle {
 
                                 onActivated: {
                                     if (listViewNode.model && nodeItem.textKind !== currentValue) {
-                                        listViewNode.model.setTextKindAt(
-                                            nodeItem.index,
-                                            currentValue
-                                        )
+                                        listViewNode.model.setTextKindAt(nodeItem.index, currentValue)
                                     }
                                 }
 
@@ -151,10 +161,7 @@ Rectangle {
 
                                 onEditingFinished: {
                                     if (listViewNode.model && nodeItem.text !== text) {
-                                        listViewNode.model.setTextAt(
-                                            nodeItem.index,
-                                            text
-                                        )
+                                        listViewNode.model.setTextAt(nodeItem.index, text)
                                     }
                                 }
                             }
@@ -162,7 +169,6 @@ Rectangle {
 
                         ParamTupleList {
                             Layout.fillWidth: true
-                            Layout.fillHeight: true
                             model: nodeItem.paramTupleListModel
                         }
                     }

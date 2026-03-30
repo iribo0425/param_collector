@@ -4,13 +4,10 @@ import QtQuick.Layouts
 import Theme 1.0
 
 Rectangle {
-    id: root
-
     property alias model: listViewParam.model
 
     Layout.fillWidth: true
-    Layout.fillHeight: true
-    implicitHeight: layoutRoot.implicitHeight
+    implicitHeight: layoutRoot.implicitHeight + Theme.spacingM * 2
 
     border.width: Theme.listViewBorderWidth
     border.color: Theme.listViewBorderColor
@@ -18,7 +15,8 @@ Rectangle {
     ColumnLayout {
         id: layoutRoot
         anchors.fill: parent
-        spacing: Theme.spacingM
+        anchors.margins: Theme.spacingM
+        spacing: 0
 
         RowLayout {
             Layout.fillWidth: true
@@ -26,22 +24,20 @@ Rectangle {
 
             Label {
                 text: "Params"
-                Layout.preferredWidth: Theme.rowHeaderWidth
                 Layout.preferredHeight: Theme.controlHeight
                 font.pixelSize: Theme.fontSizeM
                 verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignRight
-                padding: Theme.spacingXs
             }
 
             Button {
                 text: "+"
                 Layout.preferredWidth: Theme.controlHeight
                 Layout.preferredHeight: Theme.controlHeight
+                font.pixelSize: Theme.fontSizeM
 
                 onClicked: {
-                    if (root.model) {
-                        root.model.addRow()
+                    if (listViewParam.model) {
+                        listViewParam.model.addRow()
                     }
                 }
             }
@@ -54,13 +50,16 @@ Rectangle {
         ListView {
             id: listViewParam
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.preferredHeight: implicitHeight
+            visible: count > 0
 
-            clip: true
+            Layout.fillWidth: true
+            Layout.topMargin: count > 0 ? Theme.spacingM : 0
+
             spacing: Theme.spacingM
-            implicitHeight: contentHeight
+            clip: true
+            interactive: false
+
+            implicitHeight: count > 0 ? contentHeight : 0
 
             delegate: Rectangle {
                 id: paramItem
@@ -82,47 +81,75 @@ Rectangle {
                         text: "×"
                         Layout.preferredWidth: Theme.controlHeight
                         Layout.preferredHeight: Theme.controlHeight
+                        Layout.alignment: Qt.AlignTop
+                        font.pixelSize: Theme.fontSizeM
+                        padding: Theme.spacingXs
 
                         onClicked: {
-                            if (root.model) {
-                                root.model.removeRowAt(paramItem.index)
+                            if (listViewParam.model) {
+                                listViewParam.model.removeRowAt(paramItem.index)
                             }
                         }
                     }
 
-                    ComboBox {
-                        id: comboBoxParamTextKind
-
-                        Layout.preferredWidth: Theme.rowHeaderWidth
-                        Layout.preferredHeight: Theme.controlHeight
-
-                        model: root.model ? root.model.textKindItems : []
-                        textRole: "text"
-                        valueRole: "value"
-
-                        currentIndex: {
-                            const i = comboBoxParamTextKind.indexOfValue(paramItem.textKind)
-                            return i >= 0 ? i : (comboBoxParamTextKind.count > 0 ? 0 : -1)
-                        }
-
-                        onActivated: function(i) {
-                            if (!root.model || i < 0) {
-                                return
-                            }
-
-                            const value = comboBoxParamTextKind.model[i].value
-                            root.model.setTextKindAt(paramItem.index, value)
-                        }
-                    }
-
-                    TextField {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: Theme.controlHeight
-                        text: paramItem.text
+                        spacing: Theme.spacingM
 
-                        onEditingFinished: {
-                            if (root.model) {
-                                root.model.setTextAt(paramItem.index, text)
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Theme.spacingM
+
+                            ComboBox {
+                                id: comboBoxParamTextKind
+
+                                Layout.preferredWidth: Theme.rowHeaderWidth
+                                Layout.preferredHeight: Theme.controlHeight
+                                font.pixelSize: Theme.fontSizeM
+                                padding: Theme.spacingXs
+
+                                model: listViewParam.model ? listViewParam.model.textKindItems : []
+                                textRole: "text"
+                                valueRole: "value"
+
+                                currentIndex: {
+                                    const i = comboBoxParamTextKind.indexOfValue(paramItem.textKind)
+                                    return i >= 0 ? i : (comboBoxParamTextKind.count > 0 ? 0 : -1)
+                                }
+
+                                onActivated: {
+                                    if (listViewParam.model && paramItem.textKind !== currentValue) {
+                                        listViewParam.model.setTextKindAt(
+                                            paramItem.index,
+                                            currentValue
+                                        )
+                                    }
+                                }
+
+                                indicator: Text {
+                                    text: "▼"
+                                    font.pixelSize: Theme.fontSizeXs
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: Theme.spacingM
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            TextField {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: Theme.controlHeight
+                                font.pixelSize: Theme.fontSizeM
+                                padding: Theme.spacingXs
+                                text: paramItem.text
+
+                                onEditingFinished: {
+                                    if (listViewParam.model && paramItem.text !== text) {
+                                        listViewParam.model.setTextAt(
+                                            paramItem.index,
+                                            text
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

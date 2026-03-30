@@ -9,7 +9,6 @@ Rectangle {
 
     Layout.fillWidth: true
     Layout.fillHeight: true
-
     implicitHeight: layoutRoot.implicitHeight
     border.width: Theme.listViewBorderWidth
     border.color: Theme.listViewBorderColor
@@ -17,6 +16,7 @@ Rectangle {
     ColumnLayout {
         id: layoutRoot
         anchors.fill: parent
+        anchors.margins: Theme.spacingM
         spacing: Theme.spacingM
 
         RowLayout {
@@ -165,6 +165,7 @@ Rectangle {
 
                         NodeList {
                             Layout.fillWidth: true
+                            contentDrivenHeight: true
                             model: referenceItem.nodeListModel
                         }
                     }
