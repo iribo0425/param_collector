@@ -1,7 +1,10 @@
+import logging
 import param_collector.model.backend as backend
 import pathlib
-import traceback
 from PySide6 import QtCore, QtQml, QtQuick, QtWidgets
+
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class MainPanel(QtWidgets.QWidget):
@@ -55,7 +58,6 @@ class MainPanel(QtWidgets.QWidget):
 
         except Exception:
             self.__cleanupQuickObjects()
-
             raise
 
 
@@ -70,7 +72,6 @@ class MainPanel(QtWidgets.QWidget):
             self.__windowContainer.deleteLater()
             self.__windowContainer = None
             self.__quickView = None
-
             return
 
         if self.__quickView is not None:
@@ -80,7 +81,7 @@ class MainPanel(QtWidgets.QWidget):
 
 
     def __quickView_statusChanged(self, status: QtQuick.QQuickView.Status) -> None:
-        print(f"[QQuickView][Status] {status}")
+        logger.debug("QQuickView status changed: %s", status)
         self.__dumpErrors()
 
 
@@ -95,7 +96,11 @@ class MainPanel(QtWidgets.QWidget):
             f"Message: {message}"
         )
 
-        print(f"[QQuickView][SceneGraphError] {fullMessage}")
+        logger.critical(
+            "QQuickView scene graph error. error=%s message=%s",
+            errorName,
+            message,
+        )
 
         QtWidgets.QMessageBox.critical(
             self,
@@ -111,10 +116,10 @@ class MainPanel(QtWidgets.QWidget):
         if not warnings:
             return
 
-        print(f"[QQmlEngine][Warning] Warning Count: {len(warnings)}")
+        logger.warning("QQmlEngine emitted %d warning(s)", len(warnings))
 
         for warning in warnings:
-            print(f"[QQmlEngine][Warning] {warning.toString()}")
+            logger.warning("QML warning: %s", warning.toString())
 
 
     def __dumpErrors(self) -> None:
@@ -127,29 +132,9 @@ class MainPanel(QtWidgets.QWidget):
         errors: list[QtQml.QQmlError] = self.__quickView.errors()
 
         if not errors:
-            print("[QQuickView][Error] Status is Error, but errors() is empty")
+            logger.error("QQuickView status is Error, but errors() is empty")
             return
 
         for error in errors:
-            print(f"[QQuickView][Error] {error.toString()}")
-
-
-def create() -> QtWidgets.QWidget:
-    try:
-        panel: MainPanel = MainPanel()
-        return panel
-
-    except Exception as e:
-        print(f"[MainPanel][InitError] {e}")
-
-        for line in traceback.format_exc().rstrip().splitlines():
-            print(f"[MainPanel][Traceback] {line}")
-
-        QtWidgets.QMessageBox.critical(
-            None,
-            "Param Collector",
-            f"Failed to initialize Param Collector.\n\n{e}",
-        )
-
-        raise
+            logger.error("QML error: %s", error.toString())
 

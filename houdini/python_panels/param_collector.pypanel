@@ -7,10 +7,10 @@
  in a single file. -->
   <interface name="param_collector" label="Param Collector" icon="MISC_python" showNetworkNavigationBar="false" help_url="">
     <script><![CDATA[
-import param_collector.panel.main_panel
+import param_collector.main as main
 
 def onCreateInterface():
-    return param_collector.panel.main_panel.create()
+    return main.createMainPanel(main.ToolMode.RELEASE)
 ]]></script>
     <includeInToolbarMenu menu_position="209" create_separator="false"/>
     <help><![CDATA[]]></help>
