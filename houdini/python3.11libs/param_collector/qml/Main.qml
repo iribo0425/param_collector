@@ -16,35 +16,30 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: Theme.controlHeight
             font.pixelSize: Theme.fontSizeM
-
             delegate: MenuBarItem {
                 implicitHeight: Theme.controlHeight
             }
 
             Menu {
-                title: "File"
                 font.pixelSize: Theme.fontSizeM
-                topPadding: 2
-                bottomPadding: 2
-
+                title: "File"
                 delegate: MenuItem {
                     implicitHeight: Theme.controlHeight
                 }
 
                 Action {
-                    onTriggered: backend.loadSettings()
                     shortcut: StandardKey.Open
                     text: "Load Settings..."
+                    onTriggered: backend.loadSettings()
                 }
 
                 Action {
-                    onTriggered: backend.saveSettings()
                     shortcut: StandardKey.Save
                     text: "Save Settings..."
+                    onTriggered: backend.saveSettings()
                 }
             }
         }
-
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -57,26 +52,26 @@ Item {
                 spacing: Theme.spacingM
 
                 Label {
-                    text: "Candidate Root Node Path"
                     Layout.preferredWidth: Theme.rowHeaderWidth
                     Layout.preferredHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: "Candidate Root Node Path"
                 }
 
                 TextField {
-                    text: backend.candidateRootNodePath
-                    onEditingFinished: backend.candidateRootNodePath = text
                     Layout.fillWidth: true
                     Layout.preferredHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: backend.candidateRootNodePath
+                    onEditingFinished: backend.candidateRootNodePath = text
                 }
 
                 Button {
-                    text: "..."
-                    onClicked: backend.selectCandidateRootNode()
                     Layout.preferredWidth: Theme.controlHeight
                     Layout.preferredHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: "..."
+                    onClicked: backend.selectCandidateRootNode()
                 }
             }
 
@@ -85,26 +80,26 @@ Item {
                 spacing: Theme.spacingM
 
                 Label {
-                    text: "Referenced Node Path"
                     Layout.preferredWidth: Theme.rowHeaderWidth
                     Layout.preferredHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: "Referenced Node Path"
                 }
 
                 TextField {
-                    text: backend.referencedNodePath
-                    onEditingFinished: backend.referencedNodePath = text
                     Layout.fillWidth: true
                     Layout.preferredHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: backend.referencedNodePath
+                    onEditingFinished: backend.referencedNodePath = text
                 }
 
                 Button {
-                    text: "..."
-                    onClicked: backend.selectReferencedNode()
                     Layout.preferredWidth: Theme.controlHeight
                     Layout.preferredHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: "..."
+                    onClicked: backend.selectReferencedNode()
                 }
             }
 
@@ -113,11 +108,11 @@ Item {
                 spacing: Theme.spacingM
 
                 CheckBox {
+                    Layout.preferredHeight: Theme.controlHeight
+                    font.pixelSize: Theme.fontSizeM
                     text: "Recursive"
                     checked: backend.recursive
                     onToggled: backend.recursive = checked
-                    Layout.preferredHeight: Theme.controlHeight
-                    font.pixelSize: Theme.fontSizeM
                 }
 
                 Item {
@@ -130,22 +125,22 @@ Item {
                 Layout.fillWidth: true
 
                 TabButton {
-                    text: "Copy Create"
                     implicitHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: "Copy Create"
                 }
 
                 TabButton {
-                    text: "Copy"
                     implicitHeight: Theme.controlHeight
                     font.pixelSize: Theme.fontSizeM
+                    text: "Copy"
                 }
             }
 
             StackLayout {
-                currentIndex: tabBar.currentIndex
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                currentIndex: tabBar.currentIndex
 
                 Item {
                     Layout.fillWidth: true
@@ -170,11 +165,11 @@ Item {
         }
 
         Button {
-            text: "Collect params"
-            onClicked: backend.collectParams()
             Layout.fillWidth: true
             implicitHeight: Theme.controlHeight
             font.pixelSize: Theme.fontSizeM
+            text: "Collect params"
+            onClicked: backend.collectParams()
         }
     }
 }
