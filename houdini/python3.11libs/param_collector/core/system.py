@@ -16,25 +16,25 @@ def configureLogging(toolMode: ToolMode) -> logging.Logger:
         logger.removeHandler(handler)
         handler.close()
 
-    streamHandler: logging.StreamHandler = logging.StreamHandler()
+    handler: logging.StreamHandler = logging.StreamHandler()
 
     if toolMode == ToolMode.DEVELOPMENT:
-        streamHandler.setLevel(logging.DEBUG)
-        streamHandler.setFormatter(
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(
             logging.Formatter(
                 "%(asctime)s | %(levelname)s | %(name)s | %(filename)s:%(lineno)d | %(message)s"
             )
         )
 
     else:
-        streamHandler.setLevel(logging.INFO)
-        streamHandler.setFormatter(
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(
             logging.Formatter(
                 "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
             )
         )
 
-    logger.addHandler(streamHandler)
+    logger.addHandler(handler)
 
     return logger
 
