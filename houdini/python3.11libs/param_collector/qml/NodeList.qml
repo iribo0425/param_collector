@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import Theme 1.0
 
 Rectangle {
-    property alias model: listViewNode.model
+    property alias model: listView.model
     property bool contentDrivenHeight: false
 
     Layout.fillWidth: true
@@ -18,8 +18,8 @@ Rectangle {
 
         const margins = Theme.spacingM * 2
         const headerHeight = Theme.controlHeight
-        const listTopMargin = listViewNode.count > 0 ? Theme.spacingM : 0
-        const listHeight = listViewNode.count > 0 ? listViewNode.contentHeight : 0
+        const listTopMargin = listView.count > 0 ? Theme.spacingM : 0
+        const listHeight = listView.count > 0 ? listView.contentHeight : 0
 
         return margins + headerHeight + listTopMargin + listHeight
     }
@@ -28,7 +28,7 @@ Rectangle {
     border.color: Theme.listViewBorderColor
 
     ColumnLayout {
-        id: layoutRoot
+        id: rootLayout
         anchors.fill: parent
         anchors.margins: Theme.spacingM
         spacing: 0
@@ -51,8 +51,8 @@ Rectangle {
                 font.pixelSize: Theme.fontSizeM
 
                 onClicked: {
-                    if (listViewNode.model) {
-                        listViewNode.model.addRow()
+                    if (listView.model) {
+                        listView.model.addRow()
                     }
                 }
             }
@@ -63,7 +63,7 @@ Rectangle {
         }
 
         ListView {
-            id: listViewNode
+            id: listView
 
             visible: !contentDrivenHeight || count > 0
 
@@ -79,7 +79,7 @@ Rectangle {
             implicitHeight: contentDrivenHeight && count > 0 ? contentHeight : 0
 
             ScrollBar.vertical: ScrollBar {
-                id: scrollBarNode
+                id: scrollBar
                 policy: contentDrivenHeight ? ScrollBar.AlwaysOff : ScrollBar.AsNeeded
             }
 
@@ -89,13 +89,13 @@ Rectangle {
                 required property string text
                 required property var paramTupleListModel
 
-                id: nodeItem
-                width: listViewNode.width - (scrollBarNode.visible ? scrollBarNode.width : 0) - Theme.spacingS
-                implicitHeight: nodeItemLayout.implicitHeight
+                id: listViewItem
+                width: listView.width - (scrollBar.visible ? scrollBar.width : 0) - Theme.spacingS
+                implicitHeight: listViewItemLayout.implicitHeight
                 height: implicitHeight
 
                 RowLayout {
-                    id: nodeItemLayout
+                    id: listViewItemLayout
                     width: parent.width
                     spacing: Theme.spacingM
 
@@ -108,8 +108,8 @@ Rectangle {
                         padding: Theme.spacingXs
 
                         onClicked: {
-                            if (listViewNode.model) {
-                                listViewNode.model.removeRowAt(nodeItem.index)
+                            if (listView.model) {
+                                listView.model.removeRowAt(listViewItem.index)
                             }
                         }
                     }
@@ -123,23 +123,23 @@ Rectangle {
                             spacing: Theme.spacingM
 
                             ComboBox {
-                                id: comboBoxNodeTextKind
+                                id: textKindComboBox
                                 Layout.preferredWidth: Theme.rowHeaderWidth
                                 Layout.preferredHeight: Theme.controlHeight
                                 font.pixelSize: Theme.fontSizeM
                                 padding: Theme.spacingXs
-                                model: listViewNode.model ? listViewNode.model.textKindItems : []
+                                model: listView.model ? listView.model.textKindItems : []
                                 textRole: "text"
                                 valueRole: "value"
 
                                 currentIndex: {
-                                    const i = comboBoxNodeTextKind.indexOfValue(nodeItem.textKind)
-                                    return i >= 0 ? i : (comboBoxNodeTextKind.count > 0 ? 0 : -1)
+                                    const i = textKindComboBox.indexOfValue(listViewItem.textKind)
+                                    return i >= 0 ? i : (textKindComboBox.count > 0 ? 0 : -1)
                                 }
 
                                 onActivated: {
-                                    if (listViewNode.model && nodeItem.textKind !== currentValue) {
-                                        listViewNode.model.setTextKindAt(nodeItem.index, currentValue)
+                                    if (listView.model && listViewItem.textKind !== currentValue) {
+                                        listView.model.setTextKindAt(listViewItem.index, currentValue)
                                     }
                                 }
 
@@ -157,11 +157,11 @@ Rectangle {
                                 Layout.preferredHeight: Theme.controlHeight
                                 font.pixelSize: Theme.fontSizeM
                                 padding: Theme.spacingXs
-                                text: nodeItem.text
+                                text: listViewItem.text
 
                                 onEditingFinished: {
-                                    if (listViewNode.model && nodeItem.text !== text) {
-                                        listViewNode.model.setTextAt(nodeItem.index, text)
+                                    if (listView.model && listViewItem.text !== text) {
+                                        listView.model.setTextAt(listViewItem.index, text)
                                     }
                                 }
                             }
@@ -169,7 +169,7 @@ Rectangle {
 
                         ParamTupleList {
                             Layout.fillWidth: true
-                            model: nodeItem.paramTupleListModel
+                            model: listViewItem.paramTupleListModel
                         }
                     }
                 }

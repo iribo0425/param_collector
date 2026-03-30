@@ -4,16 +4,16 @@ import QtQuick.Layouts
 import Theme 1.0
 
 Rectangle {
-    property alias model: listViewParam.model
+    property alias model: listView.model
 
     Layout.fillWidth: true
-    implicitHeight: layoutRoot.implicitHeight + Theme.spacingM * 2
+    implicitHeight: rootLayout.implicitHeight + Theme.spacingM * 2
 
     border.width: Theme.listViewBorderWidth
     border.color: Theme.listViewBorderColor
 
     ColumnLayout {
-        id: layoutRoot
+        id: rootLayout
         anchors.fill: parent
         anchors.margins: Theme.spacingM
         spacing: 0
@@ -36,8 +36,8 @@ Rectangle {
                 font.pixelSize: Theme.fontSizeM
 
                 onClicked: {
-                    if (listViewParam.model) {
-                        listViewParam.model.addRow()
+                    if (listView.model) {
+                        listView.model.addRow()
                     }
                 }
             }
@@ -48,7 +48,7 @@ Rectangle {
         }
 
         ListView {
-            id: listViewParam
+            id: listView
 
             visible: count > 0
 
@@ -62,18 +62,18 @@ Rectangle {
             implicitHeight: count > 0 ? contentHeight : 0
 
             delegate: Rectangle {
-                id: paramItem
+                id: listViewItem
 
                 required property int index
                 required property int textKind
                 required property string text
 
-                width: listViewParam.width
-                implicitHeight: rowLayout.implicitHeight
+                width: listView.width
+                implicitHeight: listViewItemLayout.implicitHeight
                 height: implicitHeight
 
                 RowLayout {
-                    id: rowLayout
+                    id: listViewItemLayout
                     width: parent.width
                     spacing: Theme.spacingM
 
@@ -86,8 +86,8 @@ Rectangle {
                         padding: Theme.spacingXs
 
                         onClicked: {
-                            if (listViewParam.model) {
-                                listViewParam.model.removeRowAt(paramItem.index)
+                            if (listView.model) {
+                                listView.model.removeRowAt(listViewItem.index)
                             }
                         }
                     }
@@ -101,26 +101,26 @@ Rectangle {
                             spacing: Theme.spacingM
 
                             ComboBox {
-                                id: comboBoxParamTextKind
+                                id: textKindComboBox
 
                                 Layout.preferredWidth: Theme.rowHeaderWidth
                                 Layout.preferredHeight: Theme.controlHeight
                                 font.pixelSize: Theme.fontSizeM
                                 padding: Theme.spacingXs
 
-                                model: listViewParam.model ? listViewParam.model.textKindItems : []
+                                model: listView.model ? listView.model.textKindItems : []
                                 textRole: "text"
                                 valueRole: "value"
 
                                 currentIndex: {
-                                    const i = comboBoxParamTextKind.indexOfValue(paramItem.textKind)
-                                    return i >= 0 ? i : (comboBoxParamTextKind.count > 0 ? 0 : -1)
+                                    const i = textKindComboBox.indexOfValue(listViewItem.textKind)
+                                    return i >= 0 ? i : (textKindComboBox.count > 0 ? 0 : -1)
                                 }
 
                                 onActivated: {
-                                    if (listViewParam.model && paramItem.textKind !== currentValue) {
-                                        listViewParam.model.setTextKindAt(
-                                            paramItem.index,
+                                    if (listView.model && listViewItem.textKind !== currentValue) {
+                                        listView.model.setTextKindAt(
+                                            listViewItem.index,
                                             currentValue
                                         )
                                     }
@@ -140,12 +140,12 @@ Rectangle {
                                 Layout.preferredHeight: Theme.controlHeight
                                 font.pixelSize: Theme.fontSizeM
                                 padding: Theme.spacingXs
-                                text: paramItem.text
+                                text: listViewItem.text
 
                                 onEditingFinished: {
-                                    if (listViewParam.model && paramItem.text !== text) {
-                                        listViewParam.model.setTextAt(
-                                            paramItem.index,
+                                    if (listView.model && listViewItem.text !== text) {
+                                        listView.model.setTextAt(
+                                            listViewItem.index,
                                             text
                                         )
                                     }

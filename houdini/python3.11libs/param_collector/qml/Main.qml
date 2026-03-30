@@ -143,7 +143,6 @@ Item {
             }
 
             StackLayout {
-                id: stackLayout
                 currentIndex: tabBar.currentIndex
                 Layout.fillWidth: true
                 Layout.fillHeight: true

@@ -5,16 +5,16 @@ import QtQuick.Layouts
 import Theme 1.0
 
 Rectangle {
-    property alias model: listViewReference.model
+    property alias model: listView.model
 
     Layout.fillWidth: true
     Layout.fillHeight: true
-    implicitHeight: layoutRoot.implicitHeight
+    implicitHeight: rootLayout.implicitHeight
     border.width: Theme.listViewBorderWidth
     border.color: Theme.listViewBorderColor
 
     ColumnLayout {
-        id: layoutRoot
+        id: rootLayout
         anchors.fill: parent
         anchors.margins: Theme.spacingM
         spacing: Theme.spacingM
@@ -38,8 +38,8 @@ Rectangle {
                 padding: Theme.spacingXs
 
                 onClicked: {
-                    if (listViewReference.model) {
-                        listViewReference.model.addRow()
+                    if (listView.model) {
+                        listView.model.addRow()
                     }
                 }
             }
@@ -50,7 +50,7 @@ Rectangle {
         }
 
         ListView {
-            id: listViewReference
+            id: listView
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -63,24 +63,24 @@ Rectangle {
             implicitHeight: contentHeight
 
             ScrollBar.vertical: ScrollBar {
-                id: scrollBarReference
+                id: scrollBar
                 policy: ScrollBar.AsNeeded
             }
 
             delegate: Rectangle {
-                id: referenceItem
+                id: listViewItem
 
                 required property int index
                 required property string textKind
                 required property string text
                 required property var nodeListModel
 
-                width: listViewReference.width - (scrollBarReference.visible ? scrollBarReference.width : 0) - Theme.spacingS
-                implicitHeight: referenceItemLayout.implicitHeight
+                width: listView.width - (scrollBar.visible ? scrollBar.width : 0) - Theme.spacingS
+                implicitHeight: listViewItemLayout.implicitHeight
                 height: implicitHeight
 
                 RowLayout {
-                    id: referenceItemLayout
+                    id: listViewItemLayout
                     width: parent.width
                     spacing: Theme.spacingM
 
@@ -93,8 +93,8 @@ Rectangle {
                         padding: Theme.spacingXs
 
                         onClicked: {
-                            if (listViewReference.model) {
-                                listViewReference.model.removeRowAt(referenceItem.index)
+                            if (listView.model) {
+                                listView.model.removeRowAt(listViewItem.index)
                             }
                         }
                     }
@@ -108,7 +108,7 @@ Rectangle {
                             spacing: Theme.spacingM
 
                             ComboBox {
-                                id: comboBoxReferenceTextKind
+                                id: textKindComboBox
 
                                 Layout.preferredWidth: Theme.rowHeaderWidth
                                 Layout.preferredHeight: Theme.controlHeight
@@ -123,14 +123,14 @@ Rectangle {
                                 valueRole: "value"
 
                                 currentIndex: {
-                                    const i = comboBoxReferenceTextKind.indexOfValue(referenceItem.textKind)
-                                    return i >= 0 ? i : (comboBoxReferenceTextKind.count > 0 ? 0 : -1)
+                                    const i = textKindComboBox.indexOfValue(listViewItem.textKind)
+                                    return i >= 0 ? i : (textKindComboBox.count > 0 ? 0 : -1)
                                 }
 
                                 onActivated: {
-                                    if (listViewReference.model && referenceItem.textKind !== currentValue) {
-                                        listViewReference.model.setTextKindAt(
-                                            referenceItem.index,
+                                    if (listView.model && listViewItem.textKind !== currentValue) {
+                                        listView.model.setTextKindAt(
+                                            listViewItem.index,
                                             currentValue
                                         )
                                     }
@@ -150,12 +150,12 @@ Rectangle {
                                 Layout.preferredHeight: Theme.controlHeight
                                 font.pixelSize: Theme.fontSizeM
                                 padding: Theme.spacingXs
-                                text: referenceItem.text
+                                text: listViewItem.text
 
                                 onEditingFinished: {
-                                    if (listViewReference.model && referenceItem.text !== text) {
-                                        listViewReference.model.setTextAt(
-                                            referenceItem.index,
+                                    if (listView.model && listViewItem.text !== text) {
+                                        listView.model.setTextAt(
+                                            listViewItem.index,
                                             text
                                         )
                                     }
@@ -166,7 +166,7 @@ Rectangle {
                         NodeList {
                             Layout.fillWidth: true
                             contentDrivenHeight: true
-                            model: referenceItem.nodeListModel
+                            model: listViewItem.nodeListModel
                         }
                     }
                 }
